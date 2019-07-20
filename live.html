@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ organization.name }}</title>
+  <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
+
+  <meta name='title' content='{{ organization.meta_title }}'>
+  <meta name='description' content='{{ organization.meta_description }}'>
+  <meta name='keywords' content='{{ organization.meta_keywords }}'>
+  <!-- Social Sharing -->
+  <meta name='og:title' content='{{ organization.meta_title }}'>
+  <meta name='og:description' content='{{ organization.meta_description }}'>
+  <meta name='og:url' content='{{ organization.platform_url }}'>
+  <meta name='og:image' content='{{ organization.logo_url }}'>
+  <!-- Social Sharing -->
+
+  <link href='{{ organization.platform_url }}'>
+  <link href='{{ organization.favicon }}' rel='icon' type='image/png'>
+
+  {{ platform_head }}
+
+  {{ foundation_css }}
+
+  <style type="text/css">
+    {% include 'stylesheet' %}
+  </style>
+
+  {% include 'custom_stylesheet' %}
+
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/themes/standard/stylesheets/overrides.css">
+
+  {{ organization.google_analytics_code }}
+
+</head>
+<body>
+  <header>
+    <div class="navigation contain-to-grid">
+      <nav class="main top-bar" data-topbar role="navigation">
+        <ul class="title-area">
+          <li class="name">
+            <h1><a href="{{ organization.website_url }}">{{ organization.brand }}</a></h1>
+          </li>
+          <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+        </ul>
+
+        <section class="top-bar-section">
+          {% if organization.header_links %}
+            <ul class="left top-bar-links has-dropdown">
+              <li class="has-dropdown hide-for-small">
+                <span class="co-icon-caret-down"></span>
+                <ul class="dropdown organization-links">
+                  {% for link in organization.header_links %}
+                    <li>{{ link }}</li>
+                  {% endfor %}
+                </ul>
+              </li>
+            </ul>
+          {% endif %}
+
+          <ul class="right has-dropdown">
+            {% if organization.give_link %}
+              <li><a id="give" href="{{ organization.give_link }}" class="button blue" target="_blank">{{ 'give' | translate }}</a></li>
+              <li class="divider hide-for-small"></li>
+            {% endif %}
+            <li class="avatar hide-for-small">{{ component.account }}</li>
+            <li class="hide-for-small">{{ component.sign_up }}</li>
+            <li class="hide-for-small">{{ component.sign_in }}</li>
+            {% for link in organization.header_links %}
+              <li class="hide-for-medium-up">{{ link }}</li>
+            {% endfor %}
+          </ul>
+        </section>
+      </nav>
+    </div>
+  </header>
+
+  {% if event %}
+
+
+    <div id="main">
+      <div class="row">
+        <div class="medium-6 columns" role="content">
+          {{ component.reminder_header }}
+          {{ component.video }}
+          {{ component.slides }}
+          <div class="event-details">
+            <h2>{{ event.title }} <br> <small>{{ event.speaker }}</small></h2>
+            <p>{{ event.description }}</p>
+            {{ component.next_service_time }}
+          </div>
+          <div class="share-box">
+            {% if settings.show_social == '1' %}
+              <div class="share-heading">{{ 'share' | translate }}</div>
+              {{ component.share }}
+            {% endif %}
+            {{ component.quality_switch }}
+          </div>
+          <div class="prayer-box" data-behavior="co-prayer-box">
+            <div class="prayer-tagline show-for-large-up">{{ organization.prayer_tagline }}</div>
+            {{ component.prayer_button }}
+          </div>
+        </div>
+        <div class="small-12 mobile-schedule-buttons columns show-for-small-only">
+          <a href="#" data-behavior="show-schedule" class="white-button button expand">{{ 'show_schedule' | translate }} <i class="co-icon-plus-square-o"></i></a>
+          <a href="#" data-behavior="hide-schedule" class="white-button button expand" style="display:none;">{{ 'hide_schedule' | translate }} <i class="co-icon-minus-square-o"></i></a>
+        </div>
+        <div class="medium-6 use-mobile-schedule hide-for-small columns">
+          {% widgets %}
+            {% content_for_tabs %}
+              {% if event.chat_enabled? %}
+                {% tab_content chat %} {{ component.chat }} {% endtab_content %}
+              {% endif %}
+              {% if event.notes_enabled? %}
+                {% tab_content notes %} {{ component.notes }} {% endtab_content %}
+              {% endif %}
+              {% tab_content schedule %} {{ component.schedule }} {% endtab_content %}
+              {% if settings.bible_tab == '1' %}
+                {% tab_content bible %} {{ component.bible }} {% endtab_content %}
+              {% endif %}
+              {% if event.custom_tab_enabled? %}
+                {% tab_content custom-tab %} {{ component.custom_tab }} {% endtab_content %}
+              {% endif %}
+            {% endcontent_for_tabs %}
+            {% tabs %}
+              {% if event.chat_enabled? %}
+                {% tab chat %} {{ 'chat' | translate }} {% endtab %}
+              {% endif %}
+              {% if event.notes_enabled? %}
+                {% tab notes %} {{ 'notes' | translate }} {% endtab %}
+              {% endif %}
+              {% tab schedule default %} {{ 'schedule' | translate }} {% endtab %}
+              {% if settings.bible_tab == '1' %}
+                {% tab bible %} {{ 'bible' | translate }} {% endtab %}
+              {% endif %}
+              {% if event.custom_tab_enabled? %}
+                {% tab custom-tab %} {{ organization.custom_tab_title }} {% endtab %}
+              {% endif %}
+            {% endtabs %}
+          {% endwidgets %}
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div id="main">
+      <div class="row">
+        <div class="large-8 columns small-centered no_events_dialog" id="no_events" style="">
+          {% if exists.no_event_message %}
+            {% include 'no_event_message' %}
+          {% else %}
+            <h1>{{ 'no_events_msg.title' | translate }}</h1>
+            <p>{{ 'no_events_msg.message' | translate }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+    <div class="hide-for-small" id="map">
+      {{ component.toggle_map }}
+      <div id="map-container" style="display:none;">
+        <div class="top_shadow"></div>
+        <div class="bottom_shadow"></div>
+        {{ component.map }}
+      </div>
+    </div>
+
+    {% if exists.static_content %}
+      <div class="hide-for-small" id="static">
+        <div class="row">
+          <div class="medium-12 columns">
+            {% include 'static_content' %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  <footer>
+    <div class="row links-row">
+      <div class="medium-3 columns">
+        <ul class="inline-list left">
+          {% if organization.facebook_link %}
+            <li>
+              <a href="{{ organization.facebook_link }}" target="blank"><i class="co-icon-facebook"></i> Facebook</a>
+            </li>
+          {% endif %}
+          {% if organization.twitter_link %}
+            <li>
+              <a href="{{ organization.twitter_link }}" target="blank"><i class="co-icon-twitter"></i> Twitter</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="medium-9 columns">
+        <ul class="inline-list right">
+          {% for link in organization.footer_links %}
+            <li>{{ link }}</li>
+          {% endfor %}
+          <li>
+            {{ component.disable_video }}
+          </li>
+          <li>
+            {{ component.disable_chat }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="medium-6 columns">
+        <p class="copyright">{% include 'copyright' %}</p>
+      </div>
+      <div class="medium-6 columns">
+        <a class="powered-by" href="http://churchonlineplatform.com" target="_blank">
+          Powered by
+          <img alt="Church Online Platform" height="25" src="{{ 'church_online_platform_logo_horizontal.png' | asset_url }}" width="173">
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  {{ platform_footer }}
+
+  {{ foundation_js }}
+
+  {% include 'custom_javascript' %}
+
+  <script type="text/javascript">
+    {% include 'javascript' %}
+  </script>
+
+</body>
+</html>
